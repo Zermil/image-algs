@@ -1,4 +1,4 @@
-# Image-Algs
+# image-algs
 
 Simple ways to read from or write to an image file. Most of this code is used for presentation and educational purposes.
 
