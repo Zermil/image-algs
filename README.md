@@ -1,6 +1,11 @@
 # image-algs
 
-Simple ways to read from or write to an image file. Most of this code is used for presentation and educational purposes.
+Simple algorithms to: 
+- Read an image file
+- Write an image file
+- Encode pixels for an image file
+
+Most of this code is used for presentation and educational purposes.
 
 ## Build and Run
 
