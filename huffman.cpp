@@ -12,10 +12,6 @@ typedef uint32_t u32;
 /* 
    ========================================================================
    HEADER SECTION
-
-   PARENT_NODE := (index - 1) / 2;
-   LEFT_NODE := (index * 2) + 1;
-   RIGHT_NODE := (index * 2) + 2;
    ======================================================================== 
 */
 struct Hf_Node {
@@ -33,6 +29,15 @@ void heap_heapify_down(Min_Heap *heap);
 void heap_insert(Min_Heap *heap, Hf_Node element);
 Hf_Node heap_get_min(Min_Heap *heap);
 
+/* 
+   ========================================================================
+   IMPLEMENTATION SECTION
+   
+   PARENT_NODE := (index - 1) / 2;
+   LEFT_NODE := (index * 2) + 1;
+   RIGHT_NODE := (index * 2) + 2;
+   ======================================================================== 
+*/
 void heap_heapify_up(Min_Heap *heap)
 {
     u32 current_index = (heap->size - 1);
