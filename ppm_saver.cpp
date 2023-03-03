@@ -28,6 +28,7 @@ void save_ppm(const char *filename, u32 *data, u32 width, u32 height)
     }
     
     fclose(file);
+    printf("File saved!\n");
 }
 
 void fill_color(u32 *data, u32 width, u32 height, u32 color)
