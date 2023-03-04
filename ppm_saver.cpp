@@ -16,12 +16,12 @@ void save_ppm(const char *filename, u32 *data, u32 width, u32 height)
     fprintf(file, "255\n");
 
     for (u32 i = 0; i < width * height; ++i) {
-        // 0x AA BB GG RR
+        // 0x RR GG BB AA
         u32 pixel = data[i];
         u8 bytes[3] = {
-            (pixel >> (8 * 0)) & 0xFF,
-            (pixel >> (8 * 1)) & 0xFF,
-            (pixel >> (8 * 2)) & 0xFF
+            (pixel >> (8 * 3)) & 0xFF,
+            (pixel >> (8 * 2)) & 0xFF,
+            (pixel >> (8 * 1)) & 0xFF
         };
         
         fwrite(bytes, sizeof(bytes), 1, file);
@@ -47,7 +47,7 @@ int main(int argc, char **argv)
     constexpr u32 height = 16;
     u32 data[width * height];
 
-    fill_color(data, width, height, 0xFF181818);
+    fill_color(data, width, height, 0x181818FF);
     
     for (u32 row = 0; row < height; ++row) {
         for (u32 col = (row & 1); col < width; col += 2) {
