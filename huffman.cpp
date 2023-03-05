@@ -4,17 +4,17 @@
 #include <cassert>
 #include <string>
 
+/* 
+   ========================================================================
+   HEADER SECTION
+   ======================================================================== 
+*/
 #define UNUSED(x) ((void)(x))
 #define MAX_CAP 32
 
 typedef uint8_t u8;
 typedef uint32_t u32;
 
-/* 
-   ========================================================================
-   HEADER SECTION
-   ======================================================================== 
-*/
 struct Hf_Node {
     u8 character;
     u32 frequency;
@@ -39,6 +39,41 @@ Hf_Node *heap_get_min(Min_Heap *heap);
 void huffman_print_tree(Hf_Node *root, u32 indent);
 void huffman_print_codes(Hf_Node *root, std::string str);
     
+int main(int argc, char **argv)
+{
+    UNUSED(argc);
+    UNUSED(argv);
+
+    Min_Heap heap = {0};
+
+    // NULLPTR <=> 0
+    heap_insert(&heap, { 'a', 15, 0, 0 });
+    heap_insert(&heap, { 'b', 12, 0, 0 });
+    heap_insert(&heap, { 'c', 5, 0, 0 });
+    heap_insert(&heap, { 'd', 4, 0, 0 });
+    heap_insert(&heap, { 'e', 1, 0, 0 });
+    heap_insert(&heap, { 'f', 45, 0, 0 });
+    
+    while (heap.size != 1) {
+        Hf_Node *left = heap_get_min(&heap);
+        Hf_Node *right = heap_get_min(&heap);
+
+        Hf_Node parent = {0};
+        parent.character = '\0';
+        parent.frequency = left->frequency + right->frequency;
+        parent.left = left;
+        parent.right = right;
+        
+        heap_insert(&heap, parent);
+    }
+
+    huffman_print_tree(heap.data[0], 0);
+    printf("====================\n");
+    huffman_print_codes(heap.data[0], "");
+    
+    return 0;
+}
+
 /* 
    ========================================================================
    IMPLEMENTATION SECTION
@@ -145,39 +180,4 @@ void huffman_print_codes(Hf_Node *root, std::string str)
     
     if (root->left) huffman_print_codes(root->left, str + "1");
     if (root->right) huffman_print_codes(root->right, str + "0");
-}
-
-int main(int argc, char **argv)
-{
-    UNUSED(argc);
-    UNUSED(argv);
-
-    Min_Heap heap = {0};
-
-    // NULLPTR <=> 0
-    heap_insert(&heap, { 'a', 15, 0, 0 });
-    heap_insert(&heap, { 'b', 12, 0, 0 });
-    heap_insert(&heap, { 'c', 5, 0, 0 });
-    heap_insert(&heap, { 'd', 4, 0, 0 });
-    heap_insert(&heap, { 'e', 1, 0, 0 });
-    heap_insert(&heap, { 'f', 45, 0, 0 });
-    
-    while (heap.size != 1) {
-        Hf_Node *left = heap_get_min(&heap);
-        Hf_Node *right = heap_get_min(&heap);
-
-        Hf_Node parent = {0};
-        parent.character = '\0';
-        parent.frequency = left->frequency + right->frequency;
-        parent.left = left;
-        parent.right = right;
-        
-        heap_insert(&heap, parent);
-    }
-
-    huffman_print_tree(heap.data[0], 0);
-    printf("====================\n");
-    huffman_print_codes(heap.data[0], "");
-    
-    return 0;
 }
