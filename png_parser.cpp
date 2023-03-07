@@ -3,12 +3,6 @@
 #include <cstdint>
 #include <cstring>
 
-#define UNUSED(x) ((void)(x))
-
-typedef unsigned char u8;
-typedef uint32_t u32;
-typedef int32_t s32;
-
 #define EXIT_ERROR(cond, msg, ...)                  \
     do {                                            \
         if ((cond)) {                               \
@@ -20,6 +14,10 @@ typedef int32_t s32;
 #define SIGNATURE_SIZE 8
 #define PNG_HEADER_SIZE 13
 #define CHUNK_TYPE_SIZE 4
+
+typedef unsigned char u8;
+typedef uint32_t u32;
+typedef int32_t s32;
 
 struct PNG_File {
     const u8 *data;

@@ -9,15 +9,15 @@
    HEADER SECTION
    ======================================================================== 
 */
-#define UNUSED(x) ((void)(x))
 #define MAX_CAP 32
 #define TEMP_BUFFER_SZ 16
 
+typedef unsigned char u8;
 typedef uint32_t u32;
 typedef int32_t s32;
 
 struct Hf_Node {
-    char character;
+    u8 character;
     u32 frequency;
 
     Hf_Node *left;
@@ -40,14 +40,14 @@ Hf_Node *heap_get_min(Min_Heap *heap);
 void huffman_print_tree(Hf_Node *root, u32 indent);
 void huffman_print_codes(Hf_Node *root, std::string str);
 
-char *file_read_contents(const char *filename);
+u8 *file_read_contents(const char *filename);
 
 int main(int argc, char **argv)
 {
     Min_Heap heap = {0};
     
     if (argc > 1) {
-        const char *contents = file_read_contents(argv[1]);
+        const u8 *contents = file_read_contents(argv[1]);
         
         Hf_Node node = {0};
         char temp_buffer[TEMP_BUFFER_SZ] = {0};
@@ -79,7 +79,7 @@ int main(int argc, char **argv)
             heap_insert(&heap, node);
         }
         
-        free((void *)contents);
+        free((void *) contents);
     } else {
         // DEFAULT VALUES WHEN FILE NOT PROVIDED
         heap_insert(&heap, { 'a', 15 });
@@ -218,7 +218,7 @@ void huffman_print_codes(Hf_Node *root, std::string str)
     if (root->right) huffman_print_codes(root->right, str + "1");
 }
 
-char *file_read_contents(const char *filename)
+u8 *file_read_contents(const char *filename)
 {
     FILE *file = fopen(filename, "rb");
 
@@ -231,9 +231,9 @@ char *file_read_contents(const char *filename)
     s32 size = ftell(file); 
     fseek(file, 0, SEEK_SET);
     
-    char *contents = (char *)malloc((sizeof(char) * size) + 1);
+    u8 *contents = (u8 *) malloc((sizeof(u8) * size) + 1);
     
-    fread(contents, sizeof(char), size, file);
+    fread(contents, sizeof(u8), size, file);
     contents[size] = '\0';
     
     fclose(file);
