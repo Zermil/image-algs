@@ -35,6 +35,7 @@ struct PNG_Header {
     u8 compression;
     u8 filter;
     u8 interlace;
+    u32 crc;
 };
 PNG_Header png_parse_header(PNG_File *png);
 
@@ -55,6 +56,7 @@ int main(int argc, char **argv)
     printf("Compression type: %u\n", png_header.compression);
     printf("Filter type: %u\n", png_header.filter);
     printf("Interlace method: %u\n", png_header.interlace);
+    printf("CRC: %u\n", png_header.crc);
 
     png_close_file(&png);
     
@@ -137,6 +139,8 @@ PNG_Header png_parse_header(PNG_File *png)
     header.compression = read_bytes<u8>(png);
     header.filter = read_bytes<u8>(png);
     header.interlace = read_bytes<u8>(png);
+    
+    header.crc = read_bytes<u32>(png);
     
     return(header);
 }
