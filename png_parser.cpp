@@ -14,10 +14,12 @@
 #define SIGNATURE_SIZE 8
 #define PNG_HEADER_SIZE 13
 #define CHUNK_TYPE_SIZE 4
+#define PROFILE_NAME_SIZE 80
 
-typedef unsigned char u8;
+typedef uint8_t u8;
 typedef uint32_t u32;
 typedef int32_t s32;
+typedef uint16_t u16;
 
 struct PNG_File {
     const u8 *data;
@@ -57,7 +59,46 @@ int main(int argc, char **argv)
     printf("Filter type: %u\n", png_header.filter);
     printf("Interlace method: %u\n", png_header.interlace);
     printf("CRC: %u\n", png_header.crc);
+    printf("=======================\n");
 
+    while (png.cursor != png.size) {
+        u32 length = read_bytes<u32>(&png);
+
+        u8 chunk_type[5] = {0};
+        read_bytes_to_array(&png, chunk_type, CHUNK_TYPE_SIZE);
+
+        if (strncmp((const char *) chunk_type, "iCCP", CHUNK_TYPE_SIZE) == 0) {
+            u8 profile_name[PROFILE_NAME_SIZE] = {0};
+            for (u32 i = png.cursor; png.data[i] != '\0'; ++i) {
+                profile_name[i - png.cursor] = png.data[i];
+            }
+            
+            // SIMULATE READING DATA
+            png.cursor += length;
+            u32 crc = read_bytes<u32>(&png);
+            
+            printf("[Type: %s, Profile: %s, Length: %u, CRC: %u]\n", chunk_type, profile_name, length, crc);
+        } else if (strncmp((const char *) chunk_type, "tIME", CHUNK_TYPE_SIZE) == 0) {
+            u32 saved_pos = png.cursor;
+            
+            u16 year = read_bytes<u16>(&png);
+            u8 month = read_bytes<u8>(&png);
+            u8 day = read_bytes<u8>(&png);
+            
+            // SIMULATE READING DATA
+            png.cursor += (length - (png.cursor - saved_pos));
+            u32 crc = read_bytes<u32>(&png);
+            
+            printf("[Type: %s, Date: %u-%u-%u, Length: %u, CRC: %u]\n", chunk_type, year, month, day, length, crc);
+        } else {
+            // SIMULATE READING DATA
+            png.cursor += length;
+            u32 crc = read_bytes<u32>(&png);
+            
+            printf("[Type: %s, Length: %u, CRC: %u]\n", chunk_type, length, crc);
+        }
+    }
+    
     png_close_file(&png);
     
     return 0;
