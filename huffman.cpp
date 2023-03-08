@@ -12,7 +12,7 @@
 #define MAX_CAP 32
 #define TEMP_BUFFER_SZ 16
 
-typedef unsigned char u8;
+typedef uint8_t u8;
 typedef uint32_t u32;
 typedef int32_t s32;
 
