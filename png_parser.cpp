@@ -64,7 +64,7 @@ int main(int argc, char **argv)
     while (png.cursor != png.size) {
         u32 length = read_bytes<u32>(&png);
 
-        u8 chunk_type[5] = {0};
+        u8 chunk_type[CHUNK_TYPE_SIZE + 1] = {0};
         read_bytes_to_array(&png, chunk_type, CHUNK_TYPE_SIZE);
 
         if (strncmp((const char *) chunk_type, "iCCP", CHUNK_TYPE_SIZE) == 0) {
