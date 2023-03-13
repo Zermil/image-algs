@@ -1,3 +1,7 @@
 build/*
 *.exe
 *.txt
+
+!build/.gitkeep
+!build/sample.png
+!build/frequencies.txt
