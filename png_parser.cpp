@@ -61,12 +61,17 @@ int main(int argc, char **argv)
     printf("CRC: %u\n", png_header.crc);
     printf("=======================\n");
 
-    while (png.cursor != png.size) {
+    bool should_quit = false;
+    while (!should_quit) {
         u32 length = read_bytes<u32>(&png);
 
         u8 chunk_type[CHUNK_TYPE_SIZE + 1] = {0};
         read_bytes_to_array(&png, chunk_type, CHUNK_TYPE_SIZE);
 
+        if (strncmp((const char *) chunk_type, "IEND", CHUNK_TYPE_SIZE) == 0) {
+            should_quit = true;
+        }
+        
         if (strncmp((const char *) chunk_type, "iCCP", CHUNK_TYPE_SIZE) == 0) {
             u8 profile_name[PROFILE_NAME_SIZE] = {0};
             for (u32 i = png.cursor; png.data[i] != '\0'; ++i) {
@@ -99,8 +104,10 @@ int main(int argc, char **argv)
         }
     }
     
-    png_close_file(&png);
+    printf("Read: %u, Size: %u\n", png.cursor, png.size);
     
+    png_close_file(&png);
+
     return 0;
 }
 
