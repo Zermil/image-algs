@@ -142,6 +142,7 @@ void png_close_file(PNG_File *png)
     if (png->data != 0) free((void *) png->data);
 }
 
+// @ToDo: For anyone ambitious, this would probably work better[citation needed] if you use memcpy() instead.
 template<typename T>
 T read_bytes(PNG_File *png)
 {
