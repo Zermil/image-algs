@@ -9,6 +9,7 @@ typedef float f32;
 #define WIDTH 8
 #define HEIGHT 8
 #define PI 3.14159265358f
+#define INV_SQRT2 0.70710678118f
 
 #define AT(row, col) ((col) + WIDTH * (row))
 
@@ -23,26 +24,18 @@ void print_block(f32 *block)
     }
 }
 
-void center_around_zero(f32 *block, f32 *op_block)
+void center_around_zero(f32 *block)
 {
     for (size_t row = 0; row < HEIGHT; ++row) {
         for (size_t col = 0; col < WIDTH; ++col) {
-            op_block[AT(row, col)] = block[AT(row, col)] - 128;
+            block[AT(row, col)] -= 128;
         }
     }
 }
 
 // https://en.wikipedia.org/wiki/JPEG#Discrete_cosine_transform
-f32 compute_single_uv(size_t u, size_t v, f32 *block)
+f32 compute_single_uv(size_t u, size_t v, const f32 *block)
 {
-    f32 alpha_u = 1.0f / sqrtf(2.0f);
-    f32 alpha_v = 1.0f / sqrtf(2.0f);
-
-    if (u != 0) alpha_u = 1.0f;
-    if (v != 0) alpha_v = 1.0f;
-
-    f32 coeff = (1.0f / 4.0f) * alpha_u * alpha_v;
-
     f32 cos_sum = 0.0f;
     for (size_t row = 0; row < HEIGHT; ++row) {
         for (size_t col = 0; col < WIDTH; ++col) {
@@ -50,21 +43,28 @@ f32 compute_single_uv(size_t u, size_t v, f32 *block)
             
             // @Note: All of those can be pre-computed and encoded in a table/matrix
             // since they are being re-used and are always the same.
-            f32 cos_1 = cosf(((2.0f*col + 1) * u*PI) / 16.0f);
-            f32 cos_2 = cosf(((2.0f*row + 1) * v*PI) / 16.0f);
+            f32 cos_1 = cosf(((2.0f*row + 1) * u*PI) / 16.0f);
+            f32 cos_2 = cosf(((2.0f*col + 1) * v*PI) / 16.0f);
             
             cos_sum += pixel_value * cos_1 * cos_2;
         }
     }
 
-    return(coeff * cos_sum);
+    return(cos_sum);
 }
 
-void take_2d_dct(f32 *normalized_block, f32 *dct_block)
+void take_2d_dct(f32 *block, f32 *dct_block)
 {
     for (size_t row = 0; row < HEIGHT; ++row) {
+        f32 alpha_u = INV_SQRT2;
+        if (row > 0) alpha_u = 1.0f;
+        
         for (size_t col = 0; col < WIDTH; ++col) {
-            dct_block[AT(row, col)] = compute_single_uv(col, row, normalized_block);
+            f32 alpha_v = INV_SQRT2;
+            if (col > 0) alpha_v = 1.0f;
+
+            f32 coeff = 0.25f * alpha_u * alpha_v;
+            dct_block[AT(row, col)] = coeff * compute_single_uv(row, col, block);
         }
     }
 }
@@ -88,13 +88,12 @@ int main(int argc, char **argv)
     printf("\nORIGINAL------------------------------------------------\n\n");    
     print_block(block);
     
-    f32 op_block[WIDTH * HEIGHT] = {0};
-    center_around_zero(block, op_block);    
+    center_around_zero(block);
     printf("\nNORM----------------------------------------------------\n\n");
-    print_block(op_block);
-    
+    print_block(block);
+
     f32 dct_block[WIDTH * HEIGHT] = {0};
-    take_2d_dct(op_block, dct_block);    
+    take_2d_dct(block, dct_block);    
     printf("\nDCT-II--------------------------------------------------\n\n");
     print_block(dct_block);
     
