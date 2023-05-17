@@ -12,12 +12,11 @@ if not exist .\build mkdir build
 cl %CXXFLAGS% ppm_saver.cpp /Fo:build\ /Fe:build\ppm_saver.exe
 cl %CXXFLAGS% huffman.cpp /Fo:build\ /Fe:build\huffman.exe
 cl %CXXFLAGS% png_parser.cpp /Fo:build\ /Fe:build\png_parser.exe
+cl %CXXFLAGS% dct.cpp /Fo:build\ /Fe:build\dct.exe
 
 REM Clean the build folder
 cd .\build
-del ppm_saver.obj
-del huffman.obj
-del png_parser.obj
+del *.obj
 cd ..
 
 popd
